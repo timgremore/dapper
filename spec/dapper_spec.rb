@@ -10,6 +10,7 @@ describe "Dapper" do
     
     Dapper::Connection.connection.host.should eql("1.2.3.4")
     Dapper::Connection.connection.port.should eql(389)
+    Dapper::Connection.connection.base.should eql("ab.cd")
     Dapper::Connection.username.should eql("admin")
     Dapper::Connection.password.should eql("secret")
   end
