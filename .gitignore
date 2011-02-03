@@ -3,3 +3,4 @@
 Gemfile.lock
 pkg/*
 ldap.yml
+ldap_with_env.yml

@@ -52,4 +52,12 @@ describe "Dapper" do
     
     Dummy.authenticate("invalid", "user").should be_false
   end
+  
+  it "should return true with live ldap and ldap.yml file containing environments set as RACK_ENV" do
+    ENV["RACK_ENV"] = "development"
+    
+    rebuild_class("ldap_with_env.yml")
+    
+    Dummy.authenticate("LSSUser1", "nwtc123").should be_true
+  end  
 end

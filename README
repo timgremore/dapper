@@ -1,0 +1,23 @@
+Simple library to validate usernames and passwords against an LDAP server.
+
+Example:
+
+ldap.yml example
+
+development:
+  host: 1.2.3.4
+  base: dc=domain,dc=edu
+  username: my_user
+  password: my_password
+  attrs: mail givenname sn
+  result_set_limit: 100
+  
+===========================
+
+usage:
+
+class User
+	include Dapper
+	
+	has_ldap_connection "<path to ldap.yml>"
+end
