@@ -9,6 +9,11 @@ module Dapper
   
   module ClassMethods
     def has_ldap_connection(options)
+      self.instance_eval do
+        def connection
+          Dapper::Connection.connection
+        end
+      end
       Dapper::Connection.configure(options)
     end
   end

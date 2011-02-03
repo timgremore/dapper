@@ -5,8 +5,34 @@ describe "Dapper" do
     expect{ rebuild_model }.to raise_error(StandardError)
   end
   
-  it "should not raise exception with configuration set" do
+  it "should accept configuration as a hash" do
     rebuild_class(host: "1.2.3.4", base: "ab.cd", port: 389, username: "admin", password: "secret")
+    
+    Dummy.connection.should be(Dapper::Connection.connection)
+    
+    Dapper::Connection.connection.host.should eql("1.2.3.4")
+    Dapper::Connection.connection.port.should eql(389)
+    Dapper::Connection.connection.base.should eql("ab.cd")
+    Dapper::Connection.username.should eql("admin")
+    Dapper::Connection.password.should eql("secret")
+  end
+  
+  it "should accept configuration as a path to a yml file" do
+    yml = <<-YML
+      host: "1.2.3.4"
+      base: "ab.cd"
+      port: 389
+      username: "admin"
+      password: "secret"
+    YML
+    
+    File.open("config.yml", "w+") { |f| f.write(yml) }
+    
+    rebuild_class("config.yml")
+    
+    File.delete("config.yml")
+    
+    Dummy.connection.should be(Dapper::Connection.connection)
     
     Dapper::Connection.connection.host.should eql("1.2.3.4")
     Dapper::Connection.connection.port.should eql(389)
