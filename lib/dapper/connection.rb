@@ -4,36 +4,48 @@ require 'active_support/core_ext'
 module Dapper
   module Connection
     
+    @@connection = nil
+    @@reconnect = true
+    
     class << self
 
       def connection
-        @@connection ||= Net::LDAP.new :host => host,
+        if @@connection.nil? || @@reconnect
+          @@connection = Net::LDAP.new :host => host,
                                        :base => base,
                                        :auth => { :method => :simple, :username => username, :password => password }
+          @@reconnect = false
+        end
+        @@connection
       end
       
+      def authenticate(username, password)
+        connection.auth(username, password)
+        connection.bind
+      end
+
       def host
-        @@host ||= config_value(:host)
+        config_value(:host)
       end
       
       def attrs
-        @@attrs ||= config_value(:attrs).split(" ")
+        config_value(:attrs).split(" ")
       end
       
       def result_set_limit
-        @@result_set_limit ||= config_value(:result_set_limit)
+        config_value(:result_set_limit)
       end
       
       def base
-        @@base ||= config_value(:base)
+        config_value(:base)
       end
       
       def username
-        @@username ||= config_value(:username)
+        config_value(:username)
       end
       
       def password
-        @@password ||= config_value(:password)
+        config_value(:password)
       end
       
       def config
@@ -46,6 +58,7 @@ module Dapper
       end      
 
       def configure(opts)
+        @@reconnect = true
         Dapper::Connection.parse_configuration(opts)
       end
 

@@ -19,7 +19,7 @@ describe "Dapper" do
   
   it "should accept configuration as a path to a yml file" do
     yml = <<-YML
-      host: "1.2.3.4"
+      host: "4.3.2.1"
       base: "ab.cd"
       port: 389
       username: "admin"
@@ -34,10 +34,22 @@ describe "Dapper" do
     
     Dummy.connection.should be(Dapper::Connection.connection)
     
-    Dapper::Connection.connection.host.should eql("1.2.3.4")
+    Dapper::Connection.connection.host.should eql("4.3.2.1")
     Dapper::Connection.connection.port.should eql(389)
     Dapper::Connection.connection.base.should eql("ab.cd")
     Dapper::Connection.username.should eql("admin")
     Dapper::Connection.password.should eql("secret")
+  end
+  
+  it "should return true with live ldap and ldap.yml file" do
+    rebuild_class("ldap.yml")
+    
+    Dummy.authenticate("LSSUser1", "nwtc123").should be_true
+  end
+  
+  it "should return false with live ldap and ldap.yml" do
+    rebuild_class("ldap.yml")
+    
+    Dummy.authenticate("invalid", "user").should be_false
   end
 end

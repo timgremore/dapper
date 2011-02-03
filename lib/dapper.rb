@@ -13,6 +13,10 @@ module Dapper
         def connection
           Dapper::Connection.connection
         end
+        
+        def authenticate(username, password)
+          Dapper::Connection.authenticate(username, password)
+        end
       end
       Dapper::Connection.configure(options)
     end
