@@ -64,7 +64,14 @@ module Dapper
 
       def parse_configuration(opts)
         opts = find_credentials(opts).stringify_keys
-        @@config = (opts[ENV["RACK_ENV"]] || opts).with_indifferent_access
+        
+        if defined?(Rails)
+          @@config = (opts[Rails.env] || opts).symbolize_keys
+        elsif defined?(ENV["RACK_ENV"])
+          @@config = (opts[ENV["RACK_ENV"]] || opts).symbolize_keys
+        else
+          @@config = opts.symbolize_keys
+        end
       end
     
       def find_credentials(opts)
