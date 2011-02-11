@@ -44,13 +44,13 @@ describe "Dapper" do
   it "should return true with live ldap and ldap.yml file" do
     rebuild_class("ldap.yml")
     
-    Dummy.authenticate("LSSUser1", "nwtc123").should be_true
+    Dummy.valid_ldap_credentials?("LSSUser1", "nwtc123").should be_true
   end
   
   it "should return false with live ldap and ldap.yml" do
     rebuild_class("ldap.yml")
     
-    Dummy.authenticate("invalid", "user").should be_false
+    Dummy.valid_ldap_credentials?("invalid", "user").should be_false
   end
   
   it "should return true with live ldap and ldap.yml file containing environments set as RACK_ENV" do
@@ -58,6 +58,6 @@ describe "Dapper" do
     
     rebuild_class("ldap_with_env.yml")
     
-    Dummy.authenticate("LSSUser1", "nwtc123").should be_true
+    Dummy.valid_ldap_credentials?("LSSUser1", "nwtc123").should be_true
   end  
 end
