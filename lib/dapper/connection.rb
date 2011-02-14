@@ -4,9 +4,10 @@ require 'active_support/core_ext'
 module Dapper
   module Connection
     
-    @@connection = nil
-    @@reconnect = true
-    @@attr_map = { username: :mail }
+    @@connection          = nil
+    @@reconnect           = true
+    @@username_attr       = :mail
+    @@search_method       = :mail
     
     class << self
 
@@ -20,12 +21,27 @@ module Dapper
         @@connection
       end
       
-      def authenticate(username, password)
+      def authenticate(my_username, password)
+        my_filter = "(#{username_attr.to_s}=#{my_username})"
         result = connection.bind_as(
-          filter: "(#{@@attr_map[:username].to_s}=#{username})",
+          filter: my_filter,
           password: password
         )
         result ? result.first : false
+      end
+      
+      def get_ldap_entry(criteria)
+        ldap_filter = Net::LDAP::Filter.eq(username_attr.to_s, criteria)
+        result = connection.search(filter: ldap_filter, size: 1)
+        result.respond_to?(:first) ? result.first : result
+      end
+      
+      def username_attr
+        @@username_attr
+      end
+      
+      def search_method
+        @@search_method
       end
       
       def host
@@ -61,10 +77,15 @@ module Dapper
         config.fetch(key)
       end
 
-      def configure(opts, attr_map = { username: :mail })
-        @@attr_map = attr_map
+      def configure(config, options = {})
+        options = {
+          username_attr: :mail,
+          search_method: :mail
+        }.merge(options).symbolize_keys
+        @@search_method = options.delete(:search_method)
+        @@username_attr = options.delete(:username_attr)
         @@reconnect = true
-        Dapper::Connection.parse_configuration(opts)
+        Dapper::Connection.parse_configuration(config)
       end
 
       def parse_configuration(opts)

@@ -8,7 +8,12 @@ module Dapper
   end
   
   module ClassMethods
-    def has_ldap_connection(options, attr_map = { username: :mail })
+    def has_ldap_connection(config, options = { })
+      options = {
+        username: :mail,
+        search_method: :mail
+      }.merge(options)
+
       self.instance_eval do
         def ldap_connection
           Dapper::Connection.connection
@@ -18,7 +23,14 @@ module Dapper
           Dapper::Connection.authenticate(username, password)
         end
       end
-      Dapper::Connection.configure(options, attr_map)
+      
+      self.class_eval do
+        def ldap_entry
+          @ldap_entry ||= Dapper::Connection.get_ldap_entry(self.send(Dapper::Connection.search_method.to_sym))
+        end
+      end
+      
+      Dapper::Connection.configure(config, options)
     end
   end
   
