@@ -17,10 +17,6 @@ module Dapper
         def valid_ldap_credentials?(username, password)
           Dapper::Connection.authenticate(username, password)
         end
-        
-        def ldap_entry
-          @ldap_entry ||= Dapper::Connection.ldap_entry
-        end
       end
       Dapper::Connection.configure(options, attr_map)
     end
