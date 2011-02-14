@@ -59,5 +59,13 @@ describe "Dapper" do
     rebuild_class("ldap_with_env.yml")
     
     Dummy.valid_ldap_credentials?("LSSUser1", "nwtc123").should be_true
-  end  
+  end
+  
+  it "should return an ldap_entry" do
+    rebuild_class("ldap.yml", { username: :samaccountname })
+    
+    ldap_entry = Dummy.valid_ldap_credentials?("LSSUser1", "nwtc123")
+    ldap_entry[:samaccountname].should eql([ "LSSUser1" ])
+    ldap_entry[:displayname].should eql([ "LSSUser1" ])
+  end
 end

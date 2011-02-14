@@ -6,6 +6,7 @@ module Dapper
     
     @@connection = nil
     @@reconnect = true
+    @@attr_map = { username: :mail }
     
     class << self
 
@@ -20,10 +21,13 @@ module Dapper
       end
       
       def authenticate(username, password)
-        connection.auth(username, password)
-        connection.bind
+        result = connection.bind_as(
+          filter: "(#{@@attr_map[:username].to_s}=#{username})",
+          password: password
+        )
+        result ? result.first : false
       end
-
+      
       def host
         config_value(:host)
       end
@@ -57,7 +61,8 @@ module Dapper
         config.fetch(key)
       end
 
-      def configure(opts)
+      def configure(opts, attr_map = { username: :mail })
+        @@attr_map = attr_map
         @@reconnect = true
         Dapper::Connection.parse_configuration(opts)
       end
