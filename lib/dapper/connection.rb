@@ -31,9 +31,11 @@ module Dapper
       end
       
       def get_ldap_entry(criteria)
-        ldap_filter = Net::LDAP::Filter.eq(username_attr.to_s, criteria)
-        result = connection.search(filter: ldap_filter, size: 1)
-        result.respond_to?(:first) ? result.first : result
+        if criteria.present?
+          ldap_filter = Net::LDAP::Filter.eq(username_attr.to_s, criteria)
+          result = connection.search(filter: ldap_filter, size: 1)
+          result.respond_to?(:first) ? result.first : result
+        end
       end
       
       def username_attr
