@@ -20,6 +20,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.add_dependency "activesupport"
   s.add_dependency "net-ldap"
-  s.add_dependency "i18n"
+  # s.add_dependency "i18n"
   s.add_development_dependency "rspec"
 end
